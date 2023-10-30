@@ -132,7 +132,24 @@ RUN mkdir -p ~/colcon_ws/src
 # Clone turtlebot3_simulations
 WORKDIR /root/colcon_ws/src
 RUN git clone -b foxy-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
+RUN git clone -b foxy-eol https://github.com/swri-robotics/mapviz.git
 RUN ls -la
+
+# Dependencies for mapviz
+RUN apt-get update
+RUN apt-get install ros-$ROS_DISTRO-marti-common-msgs 
+RUN apt-get install ros-$ROS_DISTRO-marti-visualization-msgs 
+RUN apt-get install ros-$ROS_DISTRO-marti-sensor-msgs 
+
+RUN apt-get install -y ros-$ROS_DISTRO-swri-transform-util 
+RUN apt-get install -y ros-$ROS_DISTRO-swri-route-util 
+RUN apt-get install -y ros-$ROS_DISTRO-swri-image-util 
+
+#WORKDIR /root/colcon_ws/
+#RUN rosdep init
+#RUN rosdep update
+#RUN rosdep install --from-paths src --ignore-src
+
 
 
 # Source gazebo setup before building the workspace
@@ -153,10 +170,38 @@ ENV TURTLEBOT3_MODEL burger
 RUN echo "source ~/colcon_ws/install/setup.bash" >> ~/.bashrc
 RUN echo "source ~/opt/ros/$ROS_DISTRO/setup.bash" ~/.bashrc
 
+# Additional ROS Packages and tools for course
+RUN apt-get install -y ros-foxy-vision-msgs
+
 # Sublime
 RUN curl -fsSL https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - 
 RUN add-apt-repository "deb https://download.sublimetext.com/ apt/stable/" 
 RUN apt install sublime-text
+
+
+# Docker
+# Add Docker's official GPG key:
+RUN apt-get update
+RUN apt-get install ca-certificates curl gnupg
+RUN install -m 0755 -d /etc/apt/keyrings
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+RUN chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+RUN echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+RUN sudo apt-get update
+
+RUN apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+# pip3
+RUN apt-get install -y python3-pip
+
+RUN pip install ultralytics
+
 
 
 # setup entrypoint
