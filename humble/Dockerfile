@@ -112,7 +112,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install required TurtleBot3 packages and Gazebo
 RUN apt-get update && apt-get install -y \
-    ros-${ROS_DISTRO}-gazebo-ros-pkgs \
+    #ros-${ROS_DISTRO}-gazebo-ros-pkgs \ remove this for arm64
     ros-${ROS_DISTRO}-turtlebot3-msgs \
     ros-${ROS_DISTRO}-turtlebot3 \
     && rm -rf /var/lib/apt/lists/*
