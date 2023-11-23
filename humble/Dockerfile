@@ -90,7 +90,7 @@ RUN wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/p
 # Install ROS
 ENV ROS_DISTRO humble
 # desktop or ros-base
-ARG INSTALL_PACKAGE=desktop
+ARG INSTALL_PACKAGE=desktop-full
 
 RUN apt-get update -q && \
     apt-get install -y curl gnupg2 lsb-release && \
