@@ -121,11 +121,13 @@ RUN mkdir -p /home/ubuntu/turtlebot3_ws/src
 
 
 # Install gazebo ros packages
-WORKDIR /home/ubuntu/turtlebot3_ws
-RUN wget https://raw.githubusercontent.com/ros-simulation/gazebo_ros_pkgs/ros2/gazebo_ros_pkgs.repos
-RUN vcs import src < gazebo_ros_pkgs.repos
-RUN vcs custom --args checkout humble
-RUN rosdep install --from-paths src --ignore-src -r -y
+WORKDIR /home/ubuntu/turtlebot3_ws/src
+#RUN wget https://raw.githubusercontent.com/ros-simulation/gazebo_ros_pkgs/ros2/gazebo_ros_pkgs.repos
+RUN git clone -b ros2 https://github.com/ros-simulation/gazebo_ros_pkgs.git
+#RUN vcs import src < gazebo_ros_pkgs.repos
+#RUN vcs custom --args checkout humble
+#RUN rosdep install --from-paths src --ignore-src -r -y
+RUN cd ..
 RUN /bin/bash -c ". /opt/ros/${ROS_DISTRO}/setup.bash; colcon build --symlink-install"
 
 # Install required TurtleBot3 packages and Gazebo
