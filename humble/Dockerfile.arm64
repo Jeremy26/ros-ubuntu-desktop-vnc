@@ -116,6 +116,21 @@ RUN apt update
 RUN apt-get install gazebo -y
 RUN apt-get install libgazebo-dev -y
 
+# Set up turtlebot workspace
+RUN mkdir -p /home/ubuntu/turtlebot3_ws/src
+
+# Clone turtlebot3_simulations
+WORKDIR /home/ubuntu/turtlebot3_ws/src
+RUN git clone -b ${ROS_DISTRO}-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
+
+# Install gazebo ros packages
+RUN wget https://raw.githubusercontent.com/ros-simulation/gazebo_ros_pkgs/ros2/gazebo_ros_pkgs.repos
+RUN vcs import src < gazebo_ros_pkgs.repos
+RUN vcs custom --args checkout humble
+RUN cd ..
+RUN rosdep install --from-paths src --ignore-src -r -y
+RUN /bin/bash -c ". /opt/ros/${ROS_DISTRO}/setup.bash; colcon build --symlink-install"
+
 # Install required TurtleBot3 packages and Gazebo
 RUN apt-get update && apt-get install -y \
     #ros-${ROS_DISTRO}-gazebo-ros-pkgs \
@@ -123,12 +138,7 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-turtlebot3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up turtlebot workspace
-RUN mkdir -p /home/ubuntu/turtlebot3_ws/src
 
-# Clone turtlebot3_simulations
-WORKDIR /home/ubuntu/turtlebot3_ws/src
-RUN git clone -b ${ROS_DISTRO}-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
 
 
 # Source gazebo setup before building the workspace
